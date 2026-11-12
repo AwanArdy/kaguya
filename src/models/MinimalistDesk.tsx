@@ -1,0 +1,207 @@
+import { useRef, useState } from "react";
+import { useFrame } from "@react-three/fiber";
+import { RoundedBox } from "@react-three/drei";
+import * as THREE from 'three';
+import type { FurnitureConfig } from "../types/furniture";
+
+interface MinimalistDeskProps {
+  config: FurnitureConfig
+}
+
+export function MinimalistDesk({ config }: MinimalistDeskProps) {
+  const { width, depth, height, finish } = config;
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const drawerRef = useRef<THREE.Group>(null);
+
+  const topThickness = 0.028;
+  const apronHeight = 0.11;
+  const panelThickness = 0.018;
+  const legHeight = height - topThickness / 2;
+  const topY = height - topThickness / 2;
+  const apronY = height - topThickness - apronHeight / 2;
+
+  const drawerSectionWidth = 0.38;
+  const drawerSectionX = width / 2 - drawerSectionWidth / 2 - 0.03;
+
+  const legInsetX = width / 2 - 0.055;
+  const legInsetZ = depth / 2 - 0.055;
+  const legPositions: Array<[number, number, number]> = [
+    [-legInsetX, legHeight / 2, -legInsetZ],
+    [ legInsetX, legHeight / 2, -legInsetZ],
+    [-legInsetX, legHeight / 2,  legInsetZ],
+    [ legInsetX, legHeight / 2,  legInsetZ],
+  ];
+
+  useFrame((_, delta) => {
+    if (!drawerRef.current) return;
+    const targetZ = drawerOpen ? 0.24 : 0;
+    drawerRef.current.position.z =  THREE.MathUtils.lerp(
+      drawerRef.current.position.z,
+      targetZ,
+      1 - Math.exp(-10 * delta)
+    );
+  });
+
+  if (typeof document !== 'undefined') {
+    document.body.style.cursor = hovered ? 'pointer' : 'auto';
+  }
+
+  return (
+    <group>
+      {/* 1. DAUN MEJA UTAMA (dengan bevel 4mm) */}
+      <RoundedBox
+        args={[width, topThickness, depth]}
+        radius={0.004}
+        smoothness={4}
+        position={[0, topY, 0]}
+        castShadow
+        receiveShadow
+      >
+        <meshStandardMaterial
+          color={finish.color}
+          roughness={finish.roughness}
+          metalness={finish.metalness}
+        />
+      </RoundedBox>
+
+      {/* 2. RANGKA PENYANGGA BAWAH (APRON) */}
+      {/* Panel Belakang */}
+      <mesh
+        position={[0, apronY, -depth / 2 + 0.04]}
+        castShadow
+        receiveShadow
+      >
+        <boxGeometry args={[width - 0.12, apronHeight, panelThickness]} />
+        <meshStandardMaterial
+          color={finish.color}
+          roughness={finish.roughness}
+          metalness={finish.metalness}
+        />
+      </mesh>
+
+      {/* Panel Samping Kiri */}
+      <mesh
+        position={[-width / 2 + 0.06, apronY, 0]}
+        castShadow
+        receiveShadow
+      >
+        <boxGeometry args={[panelThickness, apronHeight, depth - 0.1]} />
+        <meshStandardMaterial
+          color={finish.color}
+          roughness={finish.roughness}
+          metalness={finish.metalness}
+        />
+      </mesh>
+
+      {/* Panel Samping Kanan */}
+      <mesh
+        position={[width / 2 - 0.06, apronY, 0]}
+        castShadow
+        receiveShadow
+      >
+        <boxGeometry args={[panelThickness, apronHeight, depth - 0.1]} />
+        <meshStandardMaterial
+          color={finish.color}
+          roughness={finish.roughness}
+          metalness={finish.metalness}
+        />
+      </mesh>
+
+      {/* Sekat Kiri Unit Laci */}
+      <mesh
+        position={[drawerSectionX - drawerSectionWidth / 2, apronY, 0]}
+        castShadow
+        receiveShadow
+      >
+        <boxGeometry args={[panelThickness, apronHeight, depth - 0.1]} />
+        <meshStandardMaterial
+          color={finish.color}
+          roughness={finish.roughness}
+          metalness={finish.metalness}
+        />
+      </mesh>
+
+      {/* Alas Bawah Kotak Laci */}
+      <mesh
+        position={[drawerSectionX, apronY - apronHeight / 2 + panelThickness / 2, 0]}
+        castShadow
+        receiveShadow
+      >
+        <boxGeometry args={[drawerSectionWidth, panelThickness, depth - 0.1]} />
+        <meshStandardMaterial
+          color={finish.color}
+          roughness={finish.roughness}
+          metalness={finish.metalness}
+        />
+      </mesh>
+
+      {/* 3. LACI INTERAKTIF (Klik untuk buka/tutup) */}
+      <group
+        ref={drawerRef}
+        position={[drawerSectionX, apronY + 0.004, 0]}
+        onClick={(e) => {
+          e.stopPropagation();
+          setDrawerOpen((prev) => !prev);
+        }}
+        onPointerOver={(e) => {
+          e.stopPropagation();
+          setHovered(true);
+        }}
+        onPointerOut={() => setHovered(false)}
+      >
+        {/* Muka Laci Depan */}
+        <RoundedBox
+          args={[drawerSectionWidth - 0.022, apronHeight - 0.022, panelThickness]}
+          radius={0.003}
+          smoothness={3}
+          position={[0, 0, depth / 2 - 0.04]}
+          castShadow
+          receiveShadow
+        >
+          <meshStandardMaterial
+            color={finish.color}
+            roughness={finish.roughness}
+            metalness={finish.metalness}
+          />
+        </RoundedBox>
+
+        {/* Handle Logam Minimalis (Matte Black / Brushed Steel) */}
+        <mesh
+          position={[0, 0.01, depth / 2 - 0.025]}
+          castShadow
+        >
+          <boxGeometry args={[0.09, 0.01, 0.018]} />
+          <meshStandardMaterial color="#1a1a1a" roughness={0.35} metalness={0.8} />
+        </mesh>
+
+        {/* Kotak Dalam Laci (Birch Plywood terang seperti laci IKEA) */}
+        <mesh position={[0, -0.01, 0.02]} castShadow receiveShadow>
+          <boxGeometry args={[drawerSectionWidth - 0.045, apronHeight - 0.04, depth - 0.15]} />
+          <meshStandardMaterial color="#e3d2b4" roughness={0.8} metalness={0} />
+        </mesh>
+      </group>
+
+      {/* 4. EMPAT KAKI MEJA MERUNCING + BANTALAN LANTAI */}
+      {legPositions.map((pos, index) => (
+        <group key={index} position={pos}>
+          {/* Batang Kaki Kayu Tapered */}
+          <mesh castShadow receiveShadow>
+            <cylinderGeometry args={[0.024, 0.017, legHeight, 24]} />
+            <meshStandardMaterial
+              color={finish.color}
+              roughness={finish.roughness}
+              metalness={finish.metalness}
+            />
+          </mesh>
+
+          {/* Bantalan Karet Hitam di Ujung Bawah Kaki */}
+          <mesh position={[0, -legHeight / 2 + 0.004, 0]}>
+            <cylinderGeometry args={[0.0175, 0.0175, 0.008, 24]} />
+            <meshStandardMaterial color="#181818" roughness={0.9} metalness={0.1} />
+          </mesh>
+        </group>
+      ))}
+      </group>
+  );
+}
