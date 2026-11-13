@@ -49,7 +49,7 @@ export function MinimalistDesk({ config }: MinimalistDeskProps) {
 
   return (
     <group>
-      {/* 1. DAUN MEJA UTAMA (dengan bevel 4mm) */}
+      {/* daun meja */}
       <RoundedBox
         args={[width, topThickness, depth]}
         radius={0.004}
@@ -65,8 +65,8 @@ export function MinimalistDesk({ config }: MinimalistDeskProps) {
         />
       </RoundedBox>
 
-      {/* 2. RANGKA PENYANGGA BAWAH (APRON) */}
-      {/* Panel Belakang */}
+      {/* rangka penyangga bawah */}
+      {/* panel belakang */}
       <mesh
         position={[0, apronY, -depth / 2 + 0.04]}
         castShadow
@@ -80,7 +80,7 @@ export function MinimalistDesk({ config }: MinimalistDeskProps) {
         />
       </mesh>
 
-      {/* Panel Samping Kiri */}
+      {/* panel samping kiri */}
       <mesh
         position={[-width / 2 + 0.06, apronY, 0]}
         castShadow
@@ -94,7 +94,7 @@ export function MinimalistDesk({ config }: MinimalistDeskProps) {
         />
       </mesh>
 
-      {/* Panel Samping Kanan */}
+      {/* panel samping kanan */}
       <mesh
         position={[width / 2 - 0.06, apronY, 0]}
         castShadow
@@ -108,7 +108,7 @@ export function MinimalistDesk({ config }: MinimalistDeskProps) {
         />
       </mesh>
 
-      {/* Sekat Kiri Unit Laci */}
+      {/* sekat kiri unit laci */}
       <mesh
         position={[drawerSectionX - drawerSectionWidth / 2, apronY, 0]}
         castShadow
@@ -122,7 +122,7 @@ export function MinimalistDesk({ config }: MinimalistDeskProps) {
         />
       </mesh>
 
-      {/* Alas Bawah Kotak Laci */}
+      {/* alas bawah kotak laci */}
       <mesh
         position={[drawerSectionX, apronY - apronHeight / 2 + panelThickness / 2, 0]}
         castShadow
@@ -136,7 +136,7 @@ export function MinimalistDesk({ config }: MinimalistDeskProps) {
         />
       </mesh>
 
-      {/* 3. LACI INTERAKTIF (Klik untuk buka/tutup) */}
+      {/* laci interaktif */}
       <group
         ref={drawerRef}
         position={[drawerSectionX, apronY + 0.004, 0]}
@@ -150,7 +150,7 @@ export function MinimalistDesk({ config }: MinimalistDeskProps) {
         }}
         onPointerOut={() => setHovered(false)}
       >
-        {/* Muka Laci Depan */}
+        {/* muka laci */}
         <RoundedBox
           args={[drawerSectionWidth - 0.022, apronHeight - 0.022, panelThickness]}
           radius={0.003}
@@ -166,7 +166,7 @@ export function MinimalistDesk({ config }: MinimalistDeskProps) {
           />
         </RoundedBox>
 
-        {/* Handle Logam Minimalis (Matte Black / Brushed Steel) */}
+        {/* handle logam */}
         <mesh
           position={[0, 0.01, depth / 2 - 0.025]}
           castShadow
@@ -175,17 +175,17 @@ export function MinimalistDesk({ config }: MinimalistDeskProps) {
           <meshStandardMaterial color="#1a1a1a" roughness={0.35} metalness={0.8} />
         </mesh>
 
-        {/* Kotak Dalam Laci (Birch Plywood terang seperti laci IKEA) */}
+        {/* kotak dalam laci */}
         <mesh position={[0, -0.01, 0.02]} castShadow receiveShadow>
           <boxGeometry args={[drawerSectionWidth - 0.045, apronHeight - 0.04, depth - 0.15]} />
           <meshStandardMaterial color="#e3d2b4" roughness={0.8} metalness={0} />
         </mesh>
       </group>
 
-      {/* 4. EMPAT KAKI MEJA MERUNCING + BANTALAN LANTAI */}
+      {/* kaki meja */}
       {legPositions.map((pos, index) => (
         <group key={index} position={pos}>
-          {/* Batang Kaki Kayu Tapered */}
+          {/* batang kaki kayu tapered */}
           <mesh castShadow receiveShadow>
             <cylinderGeometry args={[0.024, 0.017, legHeight, 24]} />
             <meshStandardMaterial
@@ -195,7 +195,7 @@ export function MinimalistDesk({ config }: MinimalistDeskProps) {
             />
           </mesh>
 
-          {/* Bantalan Karet Hitam di Ujung Bawah Kaki */}
+          {/* bantalan karet hitam di ujung bawah kaki */}
           <mesh position={[0, -legHeight / 2 + 0.004, 0]}>
             <cylinderGeometry args={[0.0175, 0.0175, 0.008, 24]} />
             <meshStandardMaterial color="#181818" roughness={0.9} metalness={0.1} />
