@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { FINISH_OPTIONS } from '../data/catalog';
 import { SceneCanvas } from './SceneCanvas';
-import { MinimalistDesk } from '../models/MinimalistDesk';
+// import { MinimalistDesk } from '../models/MinimalistDesk';
 import type { FurnitureConfig, ProductItem } from '../types/furniture';
+import { FurnitureModel } from '../models/FurnitureModel';
 
 interface ProductCustomizerViewProps {
   product: ProductItem;
@@ -118,8 +119,7 @@ export function ProductCustomizerView({ product, onBack }: ProductCustomizerView
       {/* Panel Kanan: Viewport 3D */}
       <section className="order-first h-[420px] lg:order-last lg:h-auto lg:min-h-[600px]">
         <SceneCanvas config={config}>
-          {/* Sementara seluruh produk memakai MinimalistDesk sebelum 8 model lainnya dirakit */}
-          <MinimalistDesk config={config} />
+          <FurnitureModel modelType={product.modelType} config={config} />
         </SceneCanvas>
       </section>
     </main>
